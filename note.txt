@@ -1,0 +1,8 @@
+simple-rnn-from-scratch/
+├── pretrained/
+│   └── glove.6B.100d.txt  # Tải về từ Stanford NLP
+├── utils/
+│   └── preprocessing.py   # Hàm đọc file và map từ vựng
+├── src/
+│   └── model.py           # Load ma trận embedding vào lớp RNN
+└── train.py
