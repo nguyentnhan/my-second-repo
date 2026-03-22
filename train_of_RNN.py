@@ -39,7 +39,7 @@ for _ in range(1000):
         label = y_train_np[i : i + batch_size].reshape(-1, 1)
         model.train(batch, label,1, 0.001)
         print(f"Đang xét batch từ chỉ số {i} đến {i + batch_size}")
-y, _, _ = model.forward(X_train_tensor[4:8].transpose(1, 0, 2), y_train_np[4:8].reshape(-1,1))
+y, _, _,_,_,_,_,_,_ = model.forward(X_train_tensor[4:8].transpose(1, 0, 2), y_train_np[4:8].reshape(-1,1))
 
 # 2. Chuyển về dạng nhãn 0 hoặc 1 (ngưỡng 0.5)
 predictions = (y > 0.5).astype(int).flatten()
