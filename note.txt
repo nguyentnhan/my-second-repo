@@ -6,3 +6,61 @@ simple-rnn-from-scratch/
 ├── src/
 │   └── model.py           # Load ma trận embedding vào lớp RNN
 └── train.py
+
+
+
+================================================================================
+                    SƠ ĐỒ CẤU TRÚC LSTM CELL (DỰA TRÊN CODE CỦA BẠN)
+================================================================================
+
+Dòng chảy dữ liệu tại bước thời gian (t):
+----------------------------------------
+
+      Trạng thái Cell (t-1)  ------> [ x ] -------------------> [ + ] -------> Trạng thái Cell (t)
+            (ct_prev)                 ^                          ^               (ct)
+                                      |                          |
+                                (Forget Gate)              (Input Gate)
+                                      f                          i * c
+                                      |                          |
+                                      |            +-------------+-------------+
+                                      |            |                           |
+      Trạng thái ẩn (t-1)  ---+----[ sigmoid ]  [ sigmoid ]  [  tanh   ]  [ sigmoid ]
+            (self.h)          |      (w_f, b_f)    (w_i, b_i)   (w_c, b_c)   (w_o, b_o)
+                              |          ^             ^             ^            ^
+      Đầu vào (t)          ---+          |             |             |            |
+      (test_tensor[t])        |          +-------------+-------------+------------+
+                              |                        |
+                              +----------------------> [ p ]  (Concatenate h và x)
+                                                       (n, 100)
+                                                       |
+                                                       v
+                                                 [ Trạng thái ẩn (t) ] <------- [ tanh(ct) * o ]
+                                                       (self.h)
+
+--------------------------------------------------------------------------------
+GIẢI THÍCH CÁC CỔNG (GATES):
+--------------------------------------------------------------------------------
+
+1. Cổng Quên (Forget Gate - f):
+   f = sigmoid(p @ w_f + b_f)
+   -> Quyết định bao nhiêu thông tin từ ct_prev sẽ được giữ lại.
+
+2. Cổng Vào (Input Gate - i & c):
+   i = sigmoid(p @ w_i + b_i)
+   c = tanh(p @ w_c + b_c)
+   -> i quyết định phần nào của thông tin mới (c) sẽ được cập nhật vào Cell state.
+
+3. Cập nhật Cell State (ct):
+   ct = f * ct_prev + i * c
+   -> Kết hợp giữa cái cũ đã lọc và cái mới đã chọn.
+
+4. Cổng Ra (Output Gate - o):
+   o = sigmoid(p @ w_o + b_o)
+   self.h = o * tanh(ct)
+   -> Lọc thông tin từ Cell state để đưa ra trạng thái ẩn (hidden state) tiếp theo.
+
+5. Lớp Dense cuối (chỉ ở bước cuối cùng):
+   y = sigmoid(self.h @ w_t + b_t)
+   -> Đưa ra dự đoán xác suất cuối cùng (0 hoặc 1).
+
+================================================================================
